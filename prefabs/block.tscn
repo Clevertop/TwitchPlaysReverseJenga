@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2fnlbcm3p6f"]
+
+[ext_resource type="Material" uid="uid://bfl54pvxyctrd" path="res://materials/BlockMaterial.tres" id="1_3ye0r"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y33cj"]
+size = Vector3(1, 0.59, 3)
+
+[node name="RigidBody3D" type="RigidBody3D"]
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_y33cj")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+size = Vector3(1, 0.59, 3)
+material = ExtResource("1_3ye0r")

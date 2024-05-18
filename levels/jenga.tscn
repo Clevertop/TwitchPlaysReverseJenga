@@ -1,11 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://bdtfounpnyaoo"]
+[gd_scene load_steps=21 format=3 uid="uid://bdtfounpnyaoo"]
 
 [ext_resource type="Script" path="res://twitch/jengacommands.gd" id="1_so2ke"]
 [ext_resource type="Script" path="res://scripts/JengaManager.gd" id="1_xtpjd"]
 [ext_resource type="Shader" path="res://addons/water_shader/shaders/water.gdshader" id="2_rliwp"]
 [ext_resource type="Material" uid="uid://bwrsgjub33pd4" path="res://materials/BaseMaterial.tres" id="2_txp0l"]
-[ext_resource type="Material" uid="uid://bfl54pvxyctrd" path="res://materials/BlockMaterial.tres" id="2_wr2cl"]
 [ext_resource type="Script" path="res://scripts/PlayerHand.gd" id="4_kq4yo"]
+[ext_resource type="PackedScene" uid="uid://b2fnlbcm3p6f" path="res://prefabs/block.tscn" id="5_mn8hr"]
 
 [sub_resource type="Environment" id="Environment_h6sx5"]
 ambient_light_color = Color(1, 1, 1, 1)
@@ -82,9 +82,6 @@ shader_parameter/wave_b = SubResource("NoiseTexture2D_2unhc")
 shader_parameter/surface_normals_a = SubResource("NoiseTexture2D_ptjyb")
 shader_parameter/surface_normals_b = SubResource("NoiseTexture2D_r4a3k")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_y33cj"]
-size = Vector3(1, 0.59, 3)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_gmpx6"]
 size = Vector3(1, 10, 3)
 
@@ -123,39 +120,32 @@ mesh = SubResource("PlaneMesh_kyck2")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_avbpb")
 
-[node name="PlayerHand" type="Node3D" parent="."]
+[node name="PlayerHand" type="Node3D" parent="." node_paths=PackedStringArray("blocks_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.28028, 0)
 script = ExtResource("4_kq4yo")
+moveScale = 0.5
+block_scene = ExtResource("5_mn8hr")
+blocks_node = NodePath("../Blocks")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="PlayerHand"]
-freeze = true
+[node name="Blocks" type="Node3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerHand/RigidBody3D"]
-shape = SubResource("BoxShape3D_y33cj")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="PlayerHand/RigidBody3D"]
-size = Vector3(1, 0.59, 3)
-material = ExtResource("2_wr2cl")
-
-[node name="StartingPlatform" type="Node3D" parent="."]
-
-[node name="StaticBody3D" type="StaticBody3D" parent="StartingPlatform"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Blocks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -4.25525, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StartingPlatform/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/StaticBody3D"]
 shape = SubResource("BoxShape3D_gmpx6")
 
-[node name="BasePlatform" type="CSGBox3D" parent="StartingPlatform/StaticBody3D"]
+[node name="BasePlatform" type="CSGBox3D" parent="Blocks/StaticBody3D"]
 material_override = ExtResource("2_txp0l")
 size = Vector3(1, 10, 3)
 
-[node name="StaticBody3D3" type="StaticBody3D" parent="StartingPlatform"]
+[node name="StaticBody3D3" type="StaticBody3D" parent="Blocks"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 2, -4.25525, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StartingPlatform/StaticBody3D3"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/StaticBody3D3"]
 shape = SubResource("BoxShape3D_gmpx6")
 
-[node name="BasePlatform" type="CSGBox3D" parent="StartingPlatform/StaticBody3D3"]
+[node name="BasePlatform" type="CSGBox3D" parent="Blocks/StaticBody3D3"]
 material_override = ExtResource("2_txp0l")
 size = Vector3(1, 10, 3)
 
@@ -175,4 +165,6 @@ offset_bottom = 23.0
 text = "meow"
 label_settings = SubResource("LabelSettings_y2xp5")
 
+[connection signal="dropBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_drop_block"]
 [connection signal="moveBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_move_block"]
+[connection signal="startTurn" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_start_turn"]

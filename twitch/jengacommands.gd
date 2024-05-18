@@ -2,6 +2,7 @@ extends Gift
 
 signal moveBlock(direction : String, amount : float)
 signal dropBlock()
+signal startTurn()
 
 @export_group("Node References")
 @export var jenga_manager : Node
@@ -120,7 +121,7 @@ func join_queue(cmd_info : CommandInfo):
 	if (searchResult == -1):
 		#not found in queue, they get added
 		jenga_manager.player_queue.append(player_name)
-		chat(searchResult + "joined the queue")
+		chat(str(player_name) + " joined the queue")
 	else:
 		chat("Sorry " + player_name + " you already in the queue at position: " + searchResult)
 	
@@ -129,16 +130,17 @@ func leave_queue(cmd_info : CommandInfo):
 	var player_name = cmd_info.sender_data.tags["display-name"]
 	var searchResult = jenga_manager.player_queue.find(player_name)
 	if (searchResult == -1):
-		chat(searchResult + "! you are not currently in the queue, join with !join_queue")
+		chat(str(player_name) + "! you are not currently in the queue, join with !join_queue")
 	else:
 		jenga_manager.player_queue.erase(player_name)
-		chat(searchResult + "left the queue")
+		chat(searchResult + " left the queue")
 	
 	pass
 
 func start_turn(cmd_info : CommandInfo):
 	#give the player who turn is about to start 20(?) seconds to confirm their turn
 	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and not jenga_manager.turn_started):
+		startTurn.emit()
 		jenga_manager.turn_started=true
 		jenga_manager.turn_timer = jenga_manager.turn_time_limit
 	pass
