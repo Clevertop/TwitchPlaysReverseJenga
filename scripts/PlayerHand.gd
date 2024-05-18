@@ -49,6 +49,17 @@ func _on_twitch_link_move_block(direction, amount):
 	position += dir * amount * moveScale
 
 
+func _on_twitch_link_rotate_block(direction, amount):
+	var dir : Vector3
+	match direction:
+		"up": dir = Vector3.UP
+		"down" : dir = Vector3.DOWN
+		"north" : dir = Vector3.FORWARD
+		"east" : dir = Vector3.RIGHT
+		"south" : dir = Vector3.BACK
+		"west" : dir = Vector3.LEFT
+	rotation_degrees += dir * amount
+
 func _on_twitch_link_drop_block():
 	current_block.freeze = false
 	current_block.reparent(blocks_node)
@@ -67,6 +78,9 @@ func _on_twitch_link_start_turn():
 #region Other methods (please try to separate and organise!)
 
 #endregion
+
+
+
 
 
 

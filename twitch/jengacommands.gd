@@ -1,6 +1,7 @@
 extends Gift
 
 signal moveBlock(direction : String, amount : float)
+signal rotateBlock(direction : String, amount : float)
 signal dropBlock()
 signal startTurn()
 
@@ -72,6 +73,7 @@ func _ready() -> void:
 	
 	#move block commands - !move north 10
 	add_command("move", move, 2,2)
+	add_command("rotate", rotate, 2,2)
 	
 	add_command("drop", drop)
 
@@ -163,6 +165,16 @@ func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 		if(validDirections.has(chosenDirection)):
 			moveBlock.emit(arg_ary[0],float(arg_ary[1]))
 			chat("moving block " + arg_ary[0] + " by " + arg_ary[1] + " units")
+		else:
+			chat("invalid direction :(")
+
+func rotate(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
+		var chosenDirection = arg_ary[0].to_lower()
+		var validDirections = ["up","down","north","south","east","west"]
+		if(validDirections.has(chosenDirection)):
+			rotateBlock.emit(arg_ary[0],float(arg_ary[1]))
+			chat("rotating block " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
 		else:
 			chat("invalid direction :(")
 

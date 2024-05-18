@@ -167,4 +167,5 @@ label_settings = SubResource("LabelSettings_y2xp5")
 
 [connection signal="dropBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_drop_block"]
 [connection signal="moveBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_move_block"]
+[connection signal="rotateBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_rotate_block"]
 [connection signal="startTurn" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_start_turn"]
