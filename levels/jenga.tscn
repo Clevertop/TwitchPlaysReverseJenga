@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://bdtfounpnyaoo"]
+[gd_scene load_steps=33 format=3 uid="uid://bdtfounpnyaoo"]
 
 [ext_resource type="Script" path="res://twitch/jengacommands.gd" id="1_so2ke"]
 [ext_resource type="Script" path="res://scripts/JengaManager.gd" id="1_xtpjd"]
@@ -87,6 +87,9 @@ shader_parameter/wave_b = SubResource("NoiseTexture2D_2unhc")
 shader_parameter/surface_normals_a = SubResource("NoiseTexture2D_ptjyb")
 shader_parameter/surface_normals_b = SubResource("NoiseTexture2D_r4a3k")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_dk6bf"]
+size = Vector3(1, 0.59, 3)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_gmpx6"]
 size = Vector3(1, 10, 3)
 
@@ -154,13 +157,20 @@ mesh = SubResource("PlaneMesh_kyck2")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_avbpb")
 
-[node name="PlayerHand" type="Node3D" parent="." node_paths=PackedStringArray("blocks_node", "gizmo_node")]
+[node name="PlayerHand" type="Node3D" parent="." node_paths=PackedStringArray("blocks_node", "gizmo_node", "shape_cast", "camera_pivot")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.28028, 0)
 script = ExtResource("4_kq4yo")
 moveScale = 0.5
 block_scene = ExtResource("5_mn8hr")
 blocks_node = NodePath("../Blocks")
 gizmo_node = NodePath("../UserInterface/SubViewportContainer/SubViewport/TransformGizmo")
+shape_cast = NodePath("ShapeCast3D")
+camera_pivot = NodePath("../CameraPivot")
+
+[node name="ShapeCast3D" type="ShapeCast3D" parent="PlayerHand"]
+shape = SubResource("BoxShape3D_dk6bf")
+target_position = Vector3(0, 0, 0)
+debug_shape_custom_color = Color(1, 0, 0, 1)
 
 [node name="Blocks" type="Node3D" parent="."]
 
@@ -355,6 +365,7 @@ label_settings = SubResource("LabelSettings_4ta2f")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="new_player_up" from="." to="PlayerHand" method="_on_jenga_new_player_up"]
 [connection signal="panic_drop" from="." to="PlayerHand" method="_on_jenga_panic_drop"]
 [connection signal="dropBlock" from="TwitchLink" to="." method="_on_twitch_link_drop_block"]
 [connection signal="dropBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_drop_block"]

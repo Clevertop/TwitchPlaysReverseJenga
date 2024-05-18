@@ -19,6 +19,8 @@ extends Node3D
 @export_group("Node References")
 @export var blocks_node : Node3D
 @export var gizmo_node : Node3D
+@export var shape_cast : ShapeCast3D
+@export var camera_pivot : Node3D
 
 #Onready Variables
 
@@ -42,6 +44,8 @@ func _process(delta):
 	rotation_degrees = lerp(rotation_degrees, tar_rotation, 0.1)
 	position = lerp(position, tar_position, 0.1)
 	gizmo_node.rotation_degrees = rotation_degrees
+	
+	
 #endregion
 
 
@@ -74,13 +78,22 @@ func _on_twitch_link_rotate_block(direction, amount):
 func _on_twitch_link_drop_block():
 	current_block.freeze = false
 	current_block.reparent(blocks_node)
+	
+	
 
 
 func _on_twitch_link_start_turn():
-	position = Vector3(0,2.28,0)
+	#var spawn_pos : Vector3 = Vector3(0,3,0)
+	
+	position.x = 0
+	position.y = 0
 	rotation_degrees =  Vector3(0,0,0)
+	tar_position.x = 0
+	tar_rotation.y = 0
+	tar_rotation =  Vector3(0,0,0)
 	current_block = block_scene.instantiate()
 	current_block.freeze = true
+	
 	add_child(current_block)
 
 func _on_jenga_panic_drop():
@@ -101,3 +114,11 @@ func _on_jenga_panic_drop():
 
 
 
+
+
+func _on_jenga_new_player_up():
+	if(shape_cast.get_collision_count()>0):
+		position.y += 1
+		tar_position.y += 1
+		camera_pivot.target_height += position.y + 1.5
+	pass # Replace with function body.

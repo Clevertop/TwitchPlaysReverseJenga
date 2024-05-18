@@ -5,7 +5,7 @@ extends Node3D
 #region Variables
 #Signals
 signal panic_drop()
-
+signal new_player_up()
 #Enums
 
 #Constants
@@ -51,6 +51,7 @@ func _process(delta):
 			current_player = player_queue[0]
 			player_queue.erase(current_player)
 			turn_started = false
+			new_player_up.emit()
 			turn_timer = accept_time_limit
 	#debug_ui_label.text = "Current Player: " + current_player + "\nTurn Started?: " + str(turn_started) + "\nTime Left: " + str(round(turn_timer)) + "\nQueue Size: " + str(player_queue.size())
 	
