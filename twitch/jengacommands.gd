@@ -2,6 +2,7 @@ extends Gift
 
 signal moveBlock(direction : String, amount : float)
 signal rotateBlock(direction : String, amount : float)
+signal rotateCamera(direction : String, amount : float)
 signal dropBlock()
 signal startTurn()
 
@@ -66,6 +67,8 @@ func _ready() -> void:
 	add_command("leave_queue", leave_queue)
 	add_command("start_turn", start_turn)
 	add_command("pass_turn", pass_turn)
+	add_aliases("join_queue", ["jq", "join"])
+	add_aliases("start_turn", ["st", "start"])
 
 	## Gameplay Commands 
 	#camera movement command - !camera left 20 (moves camera left 20 units)
@@ -149,7 +152,8 @@ func start_turn(cmd_info : CommandInfo):
 	
 func pass_turn(cmd_info : CommandInfo):
 	#allow the player to pass their turn and leave the queue if they no longer wish to play
-	jenga_manager.turn_timer = 0 #might change this later depeding on how i set up penalties
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started):
+		jenga_manager.turn_timer = 0 #might change this later depeding on how i set up penalties
 	pass
 
 
@@ -157,6 +161,14 @@ func pass_turn(cmd_info : CommandInfo):
 
 func camera(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
+		var chosenDirection = arg_ary[0].to_lower()
+		var validDirections = ["left","right"]
+		if(validDirections.has(chosenDirection)):
+			rotateCamera.emit(arg_ary[0],float(arg_ary[1]))
+			chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
+		else:
+			chat("invalid direction :(")
 	
 func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :

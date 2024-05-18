@@ -31,10 +31,9 @@ func _ready():
 	#Runs when all children have entered the tree
 	pass
 
-func _process(delta):
-	#Runs per frame
-	pass
 #endregion
+
+
 
 #region Signal methods
 func _on_twitch_link_move_block(direction, amount):
@@ -66,7 +65,8 @@ func _on_twitch_link_drop_block():
 
 
 func _on_twitch_link_start_turn():
-	position = Vector3(0,3,0)
+	position = Vector3(0,2.28,0)
+	rotation_degrees =  Vector3(0,0,0)
 	current_block = block_scene.instantiate()
 	current_block.freeze = true
 	add_child(current_block)
