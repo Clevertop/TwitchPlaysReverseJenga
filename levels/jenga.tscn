@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdtfounpnyaoo"]
+
+[ext_resource type="Script" path="res://twitch/jengacommands.gd" id="1_so2ke"]
+
+[node name="Jenga" type="Node3D"]
+
+[node name="Gift" type="Node" parent="."]
+script = ExtResource("1_so2ke")
+scopes = Array[String](["chat:edit", "chat:read", "moderator:read:followers"])
