@@ -1,6 +1,7 @@
 extends Gift
 
 signal moveBlock(direction : String, amount : float)
+signal dropBlock()
 
 @export_group("Node References")
 @export var jenga_manager : Node
@@ -70,6 +71,8 @@ func _ready() -> void:
 	
 	#move block commands - !move north 10
 	add_command("move", move, 2,2)
+	
+	add_command("drop", drop)
 
 
 
@@ -112,17 +115,30 @@ func list(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 
 func join_queue(cmd_info : CommandInfo):
 	#add sender to queue array
-	jenga_manager.player_queue.append(cmd_info.sender_data.tags["display-name"])
-	pass
+	var player_name = cmd_info.sender_data.tags["display-name"]
+	var searchResult = jenga_manager.player_queue.find(player_name)
+	if (searchResult == -1):
+		#not found in queue, they get added
+		jenga_manager.player_queue.append(player_name)
+		chat(searchResult + "joined the queue")
+	else:
+		chat("Sorry " + player_name + " you already in the queue at position: " + searchResult)
 	
 func leave_queue(cmd_info : CommandInfo):
 	#remove sender from queue array
-	jenga_manager.player_queue.erase(cmd_info.sender_data.tags["display-name"])
+	var player_name = cmd_info.sender_data.tags["display-name"]
+	var searchResult = jenga_manager.player_queue.find(player_name)
+	if (searchResult == -1):
+		chat(searchResult + "! you are not currently in the queue, join with !join_queue")
+	else:
+		jenga_manager.player_queue.erase(player_name)
+		chat(searchResult + "left the queue")
+	
 	pass
 
 func start_turn(cmd_info : CommandInfo):
 	#give the player who turn is about to start 20(?) seconds to confirm their turn
-	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player):
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and not jenga_manager.turn_started):
 		jenga_manager.turn_started=true
 		jenga_manager.turn_timer = jenga_manager.turn_time_limit
 	pass
@@ -139,7 +155,7 @@ func camera(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
 	
 func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
-	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player):
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
 		var chosenDirection = arg_ary[0].to_lower()
 		var validDirections = ["up","down","north","south","east","west"]
 		if(validDirections.has(chosenDirection)):
@@ -147,3 +163,11 @@ func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 			chat("moving block " + arg_ary[0] + " by " + arg_ary[1] + " units")
 		else:
 			chat("invalid direction :(")
+
+func drop(cmd_info : CommandInfo):
+	#make block child of world and unfreeze the rb
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
+		chat("Dropping the block!")
+		dropBlock.emit()
+		## TODO 5s/10s to watch for what block does and wait for it to finish moving before next player starts
+		

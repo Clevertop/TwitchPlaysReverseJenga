@@ -25,7 +25,6 @@ var player_queue : Array[String]
 var current_player : String = ""
 var turn_timer : float
 var turn_started : bool #cant do stuff unless this is true
-var start_process : bool = false
 
 #endregion
 
