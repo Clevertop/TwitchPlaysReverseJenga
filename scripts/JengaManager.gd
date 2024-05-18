@@ -65,7 +65,7 @@ func _process(delta):
 		turn_alert_label.text = current_player+ "  you're up! Type !start_turn"
 		timer_bar.value = turn_timer/ accept_time_limit
 	elif(turn_timer > 0 and turn_started):
-		turn_alert_label.text = "Use !move, !rotate, !camera and !drop to play your turn"
+		turn_alert_label.text = "Use !move [direction] [amount], !rotate, !camera and !drop to play your turn"
 		timer_bar.value = turn_timer/ turn_time_limit
 
 #endregion
