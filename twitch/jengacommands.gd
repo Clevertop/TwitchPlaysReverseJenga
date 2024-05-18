@@ -163,7 +163,7 @@ func camera(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
 	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
 		var chosenDirection = arg_ary[0].to_lower()
-		var validDirections = ["left","right"]
+		var validDirections = ["left","right","up","down"]
 		if(validDirections.has(chosenDirection)):
 			rotateCamera.emit(arg_ary[0],float(arg_ary[1]))
 			chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")

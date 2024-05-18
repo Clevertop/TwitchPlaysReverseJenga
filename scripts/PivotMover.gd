@@ -32,25 +32,25 @@ func _ready():
 	pass
 
 func _process(delta):
-	if abs(rotation_degrees.y - target_rotation) < 1:
-		rotation_degrees.y = target_rotation
-	else:
-		if(target_rotation > rotation_degrees.y):
-			rotation_degrees.y += rotation_speed * delta
-		else:
-			rotation_degrees.y -= rotation_speed * delta
-	pass
+	rotation_degrees.y= lerp(rotation_degrees.y, target_rotation, 0.1)
+	
+	position.y = lerp(position.y, target_height, 0.1)
+	
 	gizmo_pivot.rotation_degrees.y = rotation_degrees.y
 #endregion
 
 #region Signal methods
 
 func _on_twitch_link_rotate_camera(direction, amount):
-	var dir
+	var dir = 0
+	var vert = 0
 	match direction:
 		"left" : dir = -1
 		"right" : dir = 1
+		"up" : vert = 1
+		"down" : vert = -1
 	target_rotation += dir * float(amount)
+	target_height += vert * float(amount)
 
 #endregion
 

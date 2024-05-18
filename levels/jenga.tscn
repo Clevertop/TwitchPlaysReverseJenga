@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://bdtfounpnyaoo"]
+[gd_scene load_steps=32 format=3 uid="uid://bdtfounpnyaoo"]
 
 [ext_resource type="Script" path="res://twitch/jengacommands.gd" id="1_so2ke"]
 [ext_resource type="Script" path="res://scripts/JengaManager.gd" id="1_xtpjd"]
@@ -91,11 +91,38 @@ shader_parameter/surface_normals_b = SubResource("NoiseTexture2D_r4a3k")
 size = Vector3(1, 10, 3)
 
 [sub_resource type="LabelSettings" id="LabelSettings_y2xp5"]
+font_size = 10
 font_color = Color(0, 0, 0, 1)
 
-[node name="Jenga" type="Node3D" node_paths=PackedStringArray("debug_ui_label")]
+[sub_resource type="LabelSettings" id="LabelSettings_hb8hn"]
+font_size = 36
+
+[sub_resource type="Gradient" id="Gradient_ks4vx"]
+offsets = PackedFloat32Array(0, 0.716578, 1)
+colors = PackedColorArray(0.34, 0.34, 0.34, 1, 0.395775, 0.376751, 0.330867, 1, 0.190762, 0.190762, 0.190762, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_op5ae"]
+gradient = SubResource("Gradient_ks4vx")
+fill_to = Vector2(0, 1)
+
+[sub_resource type="Gradient" id="Gradient_a2577"]
+offsets = PackedFloat32Array(0, 0.759358, 1)
+colors = PackedColorArray(1, 0.858176, 0.22651, 1, 1, 0.77489, 0.23193, 1, 1, 0.425552, 0.254665, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_xmewu"]
+gradient = SubResource("Gradient_a2577")
+fill_to = Vector2(0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_4ta2f"]
+font_color = Color(1, 0, 0, 1)
+
+[node name="Jenga" type="Node3D" node_paths=PackedStringArray("debug_ui_label", "current_player_label", "next_up_label", "timer_bar", "turn_alert_label")]
 script = ExtResource("1_xtpjd")
 debug_ui_label = NodePath("UserInterface/DebugStuff")
+current_player_label = NodePath("UserInterface/GameUI/CurrentPlayerLabel")
+next_up_label = NodePath("UserInterface/GameUI/UpNextLabel")
+timer_bar = NodePath("UserInterface/GameUI/TurnTimeLimit")
+turn_alert_label = NodePath("UserInterface/GameUI/TurnTimeLimit/TurnAlert")
 
 [node name="TwitchLink" type="Node" parent="." node_paths=PackedStringArray("jenga_manager")]
 script = ExtResource("1_so2ke")
@@ -170,7 +197,13 @@ size_flags_horizontal = 3
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
-text = "meow"
+text = "Commands: !join_queue, !leave_queue
+On your turn:
+!start_turn - accept and begin your turn
+!move [north/south/east/west/up/down] [amount] - move the block
+!rotate [x/y/z] [degrees] - rotate the block
+!camera [left,right,up,down] - rotate or move the camera 
+!drop - drop your block and end your turn (happens automatically if you run out of time!)"
 label_settings = SubResource("LabelSettings_y2xp5")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="UserInterface"]
@@ -282,6 +315,47 @@ text = "[b][font_size=30][color=red]X[/color]
 [/font_size][/b]"
 fit_content = true
 
+[node name="GameUI" type="VBoxContainer" parent="UserInterface"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="CurrentPlayerLabel" type="Label" parent="UserInterface/GameUI"]
+layout_mode = 2
+text = "Current Player: Clevertop"
+label_settings = SubResource("LabelSettings_hb8hn")
+
+[node name="UpNextLabel" type="Label" parent="UserInterface/GameUI"]
+layout_mode = 2
+text = "Up next: Player1, Player2, Player3, Player 4"
+
+[node name="TurnTimeLimit" type="TextureProgressBar" parent="UserInterface/GameUI"]
+custom_minimum_size = Vector2(0, 30.815)
+layout_mode = 2
+max_value = 1.0
+step = 0.0
+value = 0.72
+nine_patch_stretch = true
+texture_under = SubResource("GradientTexture2D_op5ae")
+texture_progress = SubResource("GradientTexture2D_xmewu")
+
+[node name="TurnAlert" type="Label" parent="UserInterface/GameUI/TurnTimeLimit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Type !start_turn || !move !rotate !camera !drop"
+label_settings = SubResource("LabelSettings_4ta2f")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="panic_drop" from="." to="PlayerHand" method="_on_jenga_panic_drop"]
 [connection signal="dropBlock" from="TwitchLink" to="." method="_on_twitch_link_drop_block"]
 [connection signal="dropBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_drop_block"]
 [connection signal="moveBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_move_block"]
