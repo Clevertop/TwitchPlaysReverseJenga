@@ -1,9 +1,178 @@
-[gd_scene load_steps=2 format=3 uid="uid://bdtfounpnyaoo"]
+[gd_scene load_steps=22 format=3 uid="uid://bdtfounpnyaoo"]
 
 [ext_resource type="Script" path="res://twitch/jengacommands.gd" id="1_so2ke"]
+[ext_resource type="Script" path="res://scripts/JengaManager.gd" id="1_xtpjd"]
+[ext_resource type="Shader" path="res://addons/water_shader/shaders/water.gdshader" id="2_rliwp"]
+[ext_resource type="Material" uid="uid://bwrsgjub33pd4" path="res://materials/BaseMaterial.tres" id="2_txp0l"]
+[ext_resource type="Material" uid="uid://bfl54pvxyctrd" path="res://materials/BlockMaterial.tres" id="2_wr2cl"]
+[ext_resource type="Script" path="res://scripts/PlayerHand.gd" id="4_kq4yo"]
 
-[node name="Jenga" type="Node3D"]
+[sub_resource type="Environment" id="Environment_h6sx5"]
+ambient_light_color = Color(1, 1, 1, 1)
+fog_light_color = Color(1, 1, 0.972549, 1)
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0581
+volumetric_fog_emission = Color(0.65098, 1, 0.909804, 1)
 
-[node name="Gift" type="Node" parent="."]
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_10wpe"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kyck2"]
+size = Vector2(320, 320)
+subdivide_width = 1000
+subdivide_depth = 1000
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bxq8s"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ptjyb"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_bxq8s")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rwake"]
+noise_type = 0
+seed = 1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_r4a3k"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_rwake")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_e2hq3"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qdptp"]
+seamless = true
+noise = SubResource("FastNoiseLite_e2hq3")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_elfch"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2unhc"]
+seamless = true
+bump_strength = 28.3
+noise = SubResource("FastNoiseLite_elfch")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_avbpb"]
+render_priority = 0
+shader = ExtResource("2_rliwp")
+shader_parameter/albedo = Color(0, 0.717647, 0.803922, 1)
+shader_parameter/transparency = 0.55
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.5
+shader_parameter/surface_normals_move_direction_a = Vector2(-1, 0)
+shader_parameter/surface_normals_move_direction_b = Vector2(0, 1)
+shader_parameter/surface_texture_roughness = 0.6
+shader_parameter/surface_texture_scale = 0.3
+shader_parameter/surface_texture_time_scale = 0.06
+shader_parameter/ssr_resolution = 2.0
+shader_parameter/ssr_max_travel = 30.0
+shader_parameter/ssr_max_diff = 4.0
+shader_parameter/ssr_mix_strength = 0.7
+shader_parameter/wave_noise_scale = 15.0
+shader_parameter/wave_height_scale = 0.25
+shader_parameter/wave_time_scale = 0.025
+shader_parameter/wave_normal_flatness = 30.0
+shader_parameter/border_color = Color(1, 1, 1, 1)
+shader_parameter/border_scale = 0.78
+shader_parameter/border_near = 0.5
+shader_parameter/border_far = 300.0
+shader_parameter/refraction_intensity = 0.4
+shader_parameter/max_visible_depth = 10.0
+shader_parameter/color_deep = Color(0, 0.709804, 0.776471, 1)
+shader_parameter/wave_a = SubResource("NoiseTexture2D_qdptp")
+shader_parameter/wave_b = SubResource("NoiseTexture2D_2unhc")
+shader_parameter/surface_normals_a = SubResource("NoiseTexture2D_ptjyb")
+shader_parameter/surface_normals_b = SubResource("NoiseTexture2D_r4a3k")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y33cj"]
+size = Vector3(1, 0.59, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gmpx6"]
+size = Vector3(1, 10, 3)
+
+[sub_resource type="LabelSettings" id="LabelSettings_y2xp5"]
+font_color = Color(0, 0, 0, 1)
+
+[node name="Jenga" type="Node3D" node_paths=PackedStringArray("debug_ui_label")]
+script = ExtResource("1_xtpjd")
+debug_ui_label = NodePath("UserInterface/DebugStuff")
+
+[node name="TwitchLink" type="Node" parent="." node_paths=PackedStringArray("jenga_manager")]
 script = ExtResource("1_so2ke")
+jenga_manager = NodePath("..")
 scopes = Array[String](["chat:edit", "chat:read", "moderator:read:followers"])
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.445, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, 0, 0, 4.12)
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_h6sx5")
+camera_attributes = SubResource("CameraAttributesPractical_10wpe")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.903567, 0.24694, -0.350124, 0, 0.817195, 0.576361, 0.428446, -0.520781, 0.738391, 0, 0, 0)
+light_energy = 1.252
+light_indirect_energy = 1.63
+light_volumetric_fog_energy = 2.512
+
+[node name="WaterSurface" type="MeshInstance3D" parent="Environment"]
+mesh = SubResource("PlaneMesh_kyck2")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_avbpb")
+
+[node name="PlayerHand" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.28028, 0)
+script = ExtResource("4_kq4yo")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="PlayerHand"]
+freeze = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerHand/RigidBody3D"]
+shape = SubResource("BoxShape3D_y33cj")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="PlayerHand/RigidBody3D"]
+size = Vector3(1, 0.59, 3)
+material = ExtResource("2_wr2cl")
+
+[node name="StartingPlatform" type="Node3D" parent="."]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StartingPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -4.25525, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StartingPlatform/StaticBody3D"]
+shape = SubResource("BoxShape3D_gmpx6")
+
+[node name="BasePlatform" type="CSGBox3D" parent="StartingPlatform/StaticBody3D"]
+material_override = ExtResource("2_txp0l")
+size = Vector3(1, 10, 3)
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="StartingPlatform"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 2, -4.25525, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StartingPlatform/StaticBody3D3"]
+shape = SubResource("BoxShape3D_gmpx6")
+
+[node name="BasePlatform" type="CSGBox3D" parent="StartingPlatform/StaticBody3D3"]
+material_override = ExtResource("2_txp0l")
+size = Vector3(1, 10, 3)
+
+[node name="UserInterface" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="DebugStuff" type="Label" parent="UserInterface"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "meow"
+label_settings = SubResource("LabelSettings_y2xp5")
+
+[connection signal="moveBlock" from="TwitchLink" to="PlayerHand" method="_on_twitch_link_move_block"]

@@ -1,5 +1,10 @@
 extends Gift
 
+signal moveBlock(direction : String, amount : float)
+
+@export_group("Node References")
+@export var jenga_manager : Node
+
 func _ready() -> void:
 	cmd_no_permission.connect(no_permission)
 	##chat_message.connect(on_chat)
@@ -57,6 +62,7 @@ func _ready() -> void:
 	add_command("join_queue", join_queue)
 	add_command("leave_queue", leave_queue)
 	add_command("start_turn", start_turn)
+	add_command("pass_turn", pass_turn)
 
 	## Gameplay Commands 
 	#camera movement command - !camera left 20 (moves camera left 20 units)
@@ -64,7 +70,8 @@ func _ready() -> void:
 	
 	#move block commands - !move north 10
 	add_command("move", move, 2,2)
-	
+
+
 
 func on_event(type : String, data : Dictionary) -> void:
 	match(type):
@@ -105,18 +112,24 @@ func list(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 
 func join_queue(cmd_info : CommandInfo):
 	#add sender to queue array
+	jenga_manager.player_queue.append(cmd_info.sender_data.tags["display-name"])
 	pass
 	
 func leave_queue(cmd_info : CommandInfo):
 	#remove sender from queue array
+	jenga_manager.player_queue.erase(cmd_info.sender_data.tags["display-name"])
 	pass
 
 func start_turn(cmd_info : CommandInfo):
-	#give the player who urn is about to start 20(?) seconds to confirm their turn
+	#give the player who turn is about to start 20(?) seconds to confirm their turn
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player):
+		jenga_manager.turn_started=true
+		jenga_manager.turn_timer = jenga_manager.turn_time_limit
 	pass
 	
 func pass_turn(cmd_info : CommandInfo):
 	#allow the player to pass their turn and leave the queue if they no longer wish to play
+	jenga_manager.turn_timer = 0 #might change this later depeding on how i set up penalties
 	pass
 
 
@@ -126,4 +139,11 @@ func camera(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	chat("moving camera " + arg_ary[0] + " by " + arg_ary[1] + " degrees")
 	
 func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
-	chat("moving block " + arg_ary[0] + " by " + arg_ary[1] + " units")
+	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player):
+		var chosenDirection = arg_ary[0].to_lower()
+		var validDirections = ["up","down","north","south","east","west"]
+		if(validDirections.has(chosenDirection)):
+			moveBlock.emit(arg_ary[0],float(arg_ary[1]))
+			chat("moving block " + arg_ary[0] + " by " + arg_ary[1] + " units")
+		else:
+			chat("invalid direction :(")
