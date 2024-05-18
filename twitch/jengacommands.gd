@@ -183,7 +183,7 @@ func move(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 func rotate(cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	if(cmd_info.sender_data.tags["display-name"] == jenga_manager.current_player and jenga_manager.turn_started) :
 		var chosenDirection = arg_ary[0].to_lower()
-		var validDirections = ["up","down","north","south","east","west"]
+		var validDirections = ["x","y","z"]
 		if(validDirections.has(chosenDirection)):
 			rotateBlock.emit(arg_ary[0],float(arg_ary[1]))
 			chat("rotating block " + arg_ary[0] + " by " + arg_ary[1] + " degrees")

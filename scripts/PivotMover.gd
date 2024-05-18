@@ -15,6 +15,9 @@ extends Node3D
 @export var rotation_speed : float = 20 #degrees per second
 @export var height_speed : float = 0.5 # m per second
 
+@export_group("Node References")
+@export var gizmo_pivot : Node3D
+
 #Onready Variables
 
 #Other Variables (please try to separate and organise!)
@@ -37,6 +40,7 @@ func _process(delta):
 		else:
 			rotation_degrees.y -= rotation_speed * delta
 	pass
+	gizmo_pivot.rotation_degrees.y = rotation_degrees.y
 #endregion
 
 #region Signal methods

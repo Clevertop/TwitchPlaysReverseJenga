@@ -56,3 +56,7 @@ func _process(delta):
 #endregion
 
 
+
+
+func _on_twitch_link_drop_block():
+	turn_timer = 0

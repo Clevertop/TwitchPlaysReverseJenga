@@ -18,6 +18,7 @@ extends Node3D
 @export var block_scene : PackedScene
 @export_group("Node References")
 @export var blocks_node : Node3D
+@export var gizmo_node : Node3D
 
 #Onready Variables
 
@@ -51,13 +52,11 @@ func _on_twitch_link_move_block(direction, amount):
 func _on_twitch_link_rotate_block(direction, amount):
 	var dir : Vector3
 	match direction:
-		"up": dir = Vector3.UP
-		"down" : dir = Vector3.DOWN
-		"north" : dir = Vector3.FORWARD
-		"east" : dir = Vector3.RIGHT
-		"south" : dir = Vector3.BACK
-		"west" : dir = Vector3.LEFT
+		"x": dir = Vector3.RIGHT 
+		"y" : dir = Vector3.UP
+		"z" : dir = Vector3.BACK
 	rotation_degrees += dir * amount
+	gizmo_node.rotation_degrees = rotation_degrees
 
 func _on_twitch_link_drop_block():
 	current_block.freeze = false
